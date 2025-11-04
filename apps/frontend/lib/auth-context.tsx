@@ -32,7 +32,7 @@ type AuthContextValue = {
   token: string | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string) => Promise<void>
+  signUp: (email: string, password: string, displayName?: string) => Promise<void>
   signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
 }
@@ -106,9 +106,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await signInWithEmailAndPassword(auth, email, password)
   }
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, displayName?: string) => {
     const auth = getAuth()
-    await createUserWithEmailAndPassword(auth, email, password)
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+    if (displayName && userCredential.user) {
+      // Update profile with display name
+      const { updateProfile } = await import('firebase/auth')
+      await updateProfile(userCredential.user, { displayName })
+    }
   }
 
   const signInWithGoogle = async () => {

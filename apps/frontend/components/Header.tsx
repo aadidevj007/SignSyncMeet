@@ -8,7 +8,7 @@ import { Menu, X, User, LogOut } from 'lucide-react'
 import Logo from '@/components/Logo'
 
 export default function Header() {
-  const { user, userProfile, signOut } = useAuth()
+  const { user, signOut } = useAuth()
   const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -97,17 +97,17 @@ export default function Header() {
                       className="flex items-center space-x-2 text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500"
                     >
                       <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center">
-                        {userProfile?.avatar ? (
+                        {user?.photoURL ? (
                           <img
-                            src={userProfile.avatar}
-                            alt={userProfile.displayName}
+                            src={user.photoURL}
+                            alt={user.displayName || 'User'}
                             className="w-8 h-8 rounded-full object-cover"
                           />
                         ) : (
                           <User className="w-4 h-4 text-white" />
                         )}
                       </div>
-                      <span className="text-gray-300">{userProfile?.displayName || 'User'}</span>
+                      <span className="text-gray-300">{user?.displayName || user?.email || 'User'}</span>
                     </button>
 
                     {/* Dropdown Menu */}

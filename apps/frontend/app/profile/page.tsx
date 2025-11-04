@@ -71,20 +71,27 @@ export default function ProfilePage() {
   }
 
   const handleSave = async () => {
+    if (!user) return
+    
     setSaving(true)
     try {
-      // Here you would typically update the user profile in your backend
-      // For now, we'll just simulate the save
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      // Persist consent locally; backend integration can be added to user profile endpoint
+      // Update Firebase user profile
+      const { updateProfile } = await import('firebase/auth')
+      
+      if (profileData.name && profileData.name !== user.displayName) {
+        await updateProfile(user, { displayName: profileData.name })
+      }
+      
+      // Persist consent locally
       if (typeof window !== 'undefined') {
         localStorage.setItem('allowLowConfidenceSaves', String(profileData.allowLowConfidenceSaves))
       }
       
       toast.success('Profile updated successfully!')
       setIsEditing(false)
-    } catch (error) {
-      toast.error('Failed to update profile')
+    } catch (error: any) {
+      console.error('Error updating profile:', error)
+      toast.error(error.message || 'Failed to update profile')
     } finally {
       setSaving(false)
     }

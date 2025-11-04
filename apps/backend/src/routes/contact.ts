@@ -14,14 +14,15 @@ const transporter = nodemailer.createTransport({
 })
 
 // Contact form submission
-router.post('/contact', asyncHandler(async (req: Request, res: Response) => {
+router.post('/contact', asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { name, email, subject, message } = req.body
 
   if (!name || !email || !message) {
-    return res.status(400).json({ 
+    res.status(400).json({ 
       success: false, 
       error: 'Name, email, and message are required' 
     })
+    return
   }
 
   try {
