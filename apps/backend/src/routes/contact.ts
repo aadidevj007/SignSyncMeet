@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 })
 
 // Contact form submission
-router.post('/contact', asyncHandler(async (req, res) => {
+router.post('/contact', asyncHandler(async (req: any, res: any) => {
   const { name, email, subject, message } = req.body
 
   if (!name || !email || !message) {
