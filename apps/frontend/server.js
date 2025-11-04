@@ -32,10 +32,18 @@ const httpsOptions = {
   cert: fs.readFileSync(certPath),
 }
 
-const app = next({ dev, hostname, port })
+const app = next({ 
+  dev, 
+  hostname, 
+  port,
+  // Allow Next.js to build required files
+  dir: __dirname
+})
 const handle = app.getRequestHandler()
 
+// Wait for Next.js to fully prepare
 app.prepare().then(() => {
+  console.log('✅ Next.js app prepared successfully')
   createServer(httpsOptions, async (req, res) => {
     try {
       const parsedUrl = parse(req.url, true)
