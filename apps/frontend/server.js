@@ -42,14 +42,24 @@ app.prepare().then(() => {
       await handle(req, res, parsedUrl)
     } catch (err) {
       console.error('Error occurred handling', req.url, err)
-      res.statusCode = 500
-      res.end('internal server error')
+      // Don't send error response if headers already sent
+      if (!res.headersSent) {
+        res.statusCode = 500
+        res.setHeader('Content-Type', 'text/html')
+        res.end('<h1>Internal Server Error</h1><p>Please refresh the page or contact support.</p>')
+      }
     }
   }).listen(port, (err) => {
-    if (err) throw err
+    if (err) {
+      console.error('Failed to start server:', err)
+      process.exit(1)
+    }
     console.log(`✅ Ready on https://${hostname}:${port}`)
     console.log(`   Also available at https://localhost:${port}`)
   })
+}).catch((err) => {
+  console.error('Failed to prepare Next.js app:', err)
+  process.exit(1)
 })
 
 
