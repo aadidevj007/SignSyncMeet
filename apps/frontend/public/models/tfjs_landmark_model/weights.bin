@@ -1,0 +1,9 @@
+PLACEHOLDER_WEIGHTS_FILE
+This file should be replaced with actual TensorFlow.js model weights.
+To generate proper weights:
+1. Install TensorFlow and tensorflowjs: pip install tensorflow tensorflowjs
+2. Train a model using models/train_landmark_tf.py
+3. Convert using: tensorflowjs_converter --input_format keras --output_format tfjs_layers_model model.h5 apps/frontend/public/models/tfjs_landmark_model/
+4. This placeholder file will be replaced automatically.
+
+

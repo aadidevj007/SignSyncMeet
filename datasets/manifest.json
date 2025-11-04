@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "notes": "This manifest lists public datasets and partially/closed-access datasets with instructions. Do not redistribute datasets; respect licenses.",
+  "datasets": [
+    {
+      "id": "fdmse-isl",
+      "name": "FDMSE-ISL",
+      "type": "sign-word",
+      "source": "https://github.com/FDMSE-ISL",
+      "license": "Research/educational use only (check upstream)",
+      "local_path": "data/raw/fdmse-isl",
+      "access": "partial",
+      "instructions": [
+        "Review upstream repository for access and license.",
+        "Place downloaded content under data/raw/fdmse-isl/",
+        "Include a README.txt citing FDMSE-ISL."
+      ]
+    },
+    {
+      "id": "kaggle-isl-sets",
+      "name": "Kaggle ISL Collections",
+      "type": "sign-word",
+      "source": "https://www.kaggle.com/",
+      "license": "Per Kaggle dataset licenses",
+      "local_path": "data/raw/kaggle-isl",
+      "access": "kaggle",
+      "kaggle_datasets": [
+        "vaishnaviasonawane/isl-alphabet",
+        "ashwinj7/indian-sign-language-isl",
+        "monikapatare/indian-sign-language-recognition"
+      ],
+      "instructions": [
+        "Requires Kaggle CLI and API credentials.",
+        "Run scripts/download_datasets.py --use-kaggle --only kaggle-isl-sets",
+        "Datasets will be placed under data/raw/kaggle-isl/"
+      ]
+    },
+    {
+      "id": "isltranslate",
+      "name": "ISLTranslate (Exploration-Lab)",
+      "type": "sign-gloss",
+      "source": "https://github.com/Exploration-Lab/ISLTranslate",
+      "license": "Check upstream license",
+      "local_path": "data/raw/isltranslate",
+      "access": "github",
+      "git": "https://github.com/Exploration-Lab/ISLTranslate.git",
+      "instructions": [
+        "Repo includes metadata and examples; full dataset may require steps",
+        "Place large assets under data/raw/isltranslate/"
+      ]
+    },
+    {
+      "id": "wlasl",
+      "name": "WLASL (Word-Level ASL)",
+      "type": "sign-word",
+      "source": "https://github.com/dxli94/WLASL",
+      "license": "Non-commercial research license",
+      "local_path": "data/raw/wlasl",
+      "access": "github",
+      "git": "https://github.com/dxli94/WLASL.git",
+      "instructions": [
+        "Clone metadata repo; videos require separate download steps per WLASL instructions.",
+        "Create data/raw/wlasl/README.txt with citation."
+      ]
+    },
+    {
+      "id": "phoenix14t",
+      "name": "RWTH-PHOENIX-Weather 2014T",
+      "type": "sign-seq2seq",
+      "source": "https://www-i6.informatik.rwth-aachen.de/~koller/RWTH-PHOENIX/",
+      "license": "Restricted; requires registration",
+      "local_path": "data/raw/phoenix14t",
+      "access": "restricted",
+      "instructions": [
+        "Register with RWTH per official instructions.",
+        "Do not include data in repo. Place locally under data/raw/phoenix14t/",
+        "Include README.txt noting license and citation."
+      ]
+    },
+    {
+      "id": "asllvd",
+      "name": "ASLLVD",
+      "type": "sign-word",
+      "source": "http://www.bu.edu/av/asllvd/",
+      "license": "Restricted; academic use",
+      "local_path": "data/raw/asllvd",
+      "access": "partial",
+      "instructions": [
+        "Follow BU instructions for access.",
+        "Store locally in data/raw/asllvd/ with README.txt"
+      ]
+    },
+    {
+      "id": "islan",
+      "name": "ISLAN (Mendeley)",
+      "type": "sign-word",
+      "source": "https://data.mendeley.com/",
+      "license": "Per Mendeley license",
+      "local_path": "data/raw/islan",
+      "access": "portal",
+      "instructions": [
+        "Download after accepting license on Mendeley.",
+        "Place contents under data/raw/islan/"
+      ]
+    },
+    {
+      "id": "how2sign",
+      "name": "How2Sign",
+      "type": "sign-seq2seq",
+      "source": "https://how2sign.github.io/",
+      "license": "Research only; registration required",
+      "local_path": "data/raw/how2sign",
+      "access": "restricted",
+      "instructions": [
+        "Request access from authors.",
+        "Place files under data/raw/how2sign/ with README.txt"
+      ]
+    },
+    {
+      "id": "small-gestures",
+      "name": "Small Gesture Datasets",
+      "type": "gesture",
+      "source": "mixed",
+      "license": "Varies",
+      "local_path": "data/raw/small-gestures",
+      "access": "mixed",
+      "instructions": [
+        "Includes emergency gestures, alphabet sets.",
+        "Use Kaggle or GitHub links; place under data/raw/small-gestures/"
+      ]
+    }
+  ]
+}
+
+

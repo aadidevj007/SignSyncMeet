@@ -1,0 +1,30 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="20" cy="20" r="18" fill="url(#gradient1)" stroke="url(#gradient2)" stroke-width="2"/>
+  
+  <!-- Hand gesture symbol -->
+  <path d="M12 16 L16 12 L20 16 L24 12 L28 16 L28 24 C28 28 24 30 20 30 C16 30 12 28 12 24 L12 16 Z" fill="white" opacity="0.9"/>
+  
+  <!-- Fingers -->
+  <path d="M12 16 L12 20 M16 12 L16 18 M20 16 L20 22 M24 12 L24 18 M28 16 L28 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- AI circuit pattern -->
+  <circle cx="20" cy="20" r="2" fill="url(#gradient3)"/>
+  <path d="M8 8 L12 12 M32 8 L28 12 M8 32 L12 28 M32 32 L28 28" stroke="url(#gradient3)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+  
+  <!-- Gradient definitions -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+</svg>

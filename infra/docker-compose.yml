@@ -1,0 +1,237 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: signsync-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-password}
+      MONGO_INITDB_DATABASE: signsync
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - signsync-network
+
+  # Redis Cache
+  redis:
+    image: redis:7.2-alpine
+    container_name: signsync-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redispassword}
+    networks:
+      - signsync-network
+
+  # TURN Server (Coturn)
+  coturn:
+    image: coturn/coturn:latest
+    container_name: signsync-coturn
+    restart: unless-stopped
+    ports:
+      - "3478:3478"
+      - "3478:3478/udp"
+      - "49152-65535:49152-65535/udp"
+    environment:
+      TURN_USERNAME: ${TURN_USERNAME:-turnuser}
+      TURN_PASSWORD: ${TURN_PASSWORD:-turnpass}
+      TURN_REALM: ${TURN_REALM:-signsync.local}
+    volumes:
+      - ./configs/turnserver.conf:/etc/coturn/turnserver.conf:ro
+    networks:
+      - signsync-network
+
+  # Backend API Server
+  backend:
+    build:
+      context: ../apps/backend
+      dockerfile: Dockerfile
+    container_name: signsync-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-password}@mongodb:27017/signsync?authSource=admin
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redispassword}@redis:6379
+      JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-key}
+      TURN_SERVER_URL: turn:coturn:3478
+      TURN_USERNAME: ${TURN_USERNAME:-turnuser}
+      TURN_CREDENTIAL: ${TURN_PASSWORD:-turnpass}
+      MEDIASOUP_WORKER_BIN: mediasoup-worker
+      MEDIASOUP_WORKER_LOG_LEVEL: debug
+      MEDIASOUP_WORKER_LOG_TAG: info,ice,dtls,rtp,srtp,rtcp
+      MEDIASOUP_WORKER_LOG_COLOR: false
+      MEDIASOUP_WORKER_RTC_MIN_PORT: 40000
+      MEDIASOUP_WORKER_RTC_MAX_PORT: 49999
+      MEDIASOUP_ANNOUNCED_IP: ${MEDIASOUP_ANNOUNCED_IP:-127.0.0.1}
+      MEDIASOUP_WEBRTC_PORT: 44444
+      INFERENCE_SERVER_URL: http://inference-server:8000
+      TRITON_SERVER_URL: http://triton-server:8001
+      # Firebase Configuration (Authentication)
+      NEXT_PUBLIC_FIREBASE_API_KEY: ${NEXT_PUBLIC_FIREBASE_API_KEY}
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${NEXT_PUBLIC_FIREBASE_PROJECT_ID}
+      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}
+      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}
+      NEXT_PUBLIC_FIREBASE_APP_ID: ${NEXT_PUBLIC_FIREBASE_APP_ID}
+      NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID}
+      # Supabase Storage Configuration
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+    depends_on:
+      - mongodb
+      - redis
+      - coturn
+    volumes:
+      - ../apps/backend:/app
+      - /app/node_modules
+    networks:
+      - signsync-network
+
+  # MediaSoup Worker
+  mediasoup-worker:
+    build:
+      context: ../apps/backend
+      dockerfile: Dockerfile.mediasoup
+    container_name: signsync-mediasoup-worker
+    restart: unless-stopped
+    environment:
+      MEDIASOUP_WORKER_BIN: mediasoup-worker
+      MEDIASOUP_WORKER_LOG_LEVEL: debug
+      MEDIASOUP_WORKER_LOG_TAG: info,ice,dtls,rtp,srtp,rtcp
+      MEDIASOUP_WORKER_LOG_COLOR: false
+      MEDIASOUP_WORKER_RTC_MIN_PORT: 40000
+      MEDIASOUP_WORKER_RTC_MAX_PORT: 49999
+    networks:
+      - signsync-network
+
+  # Inference Server (PyTorch)
+  inference-server:
+    build:
+      context: ../ml
+      dockerfile: Dockerfile.inference
+    container_name: signsync-inference-server
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      MODEL_PATH: /app/models
+      INFERENCE_PORT: 8000
+      CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES:-0}
+      TORCH_HOME: /app/.torch
+    volumes:
+      - ../ml/models:/app/models
+      - ../ml/checkpoints:/app/checkpoints
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - signsync-network
+
+  # Triton Inference Server
+  triton-server:
+    image: nvcr.io/nvidia/tritonserver:23.10-py3
+    container_name: signsync-triton-server
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+      - "8002:8001"
+      - "8003:8002"
+    environment:
+      CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES:-0}
+    volumes:
+      - ../ml/triton_models:/models
+    command: >
+      tritonserver
+      --model-repository=/models
+      --allow-http=true
+      --allow-grpc=true
+      --allow-metrics=true
+      --log-verbose=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    networks:
+      - signsync-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: signsync-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./configs/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - backend
+    networks:
+      - signsync-network
+
+  # Monitoring - Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: signsync-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - signsync-network
+
+  # Monitoring - Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: signsync-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./configs/grafana:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+    networks:
+      - signsync-network
+
+volumes:
+  mongodb_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  signsync-network:
+    driver: bridge

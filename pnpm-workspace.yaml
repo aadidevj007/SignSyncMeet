@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+  - ml
+
+ignoredBuiltDependencies:
+  - '@tensorflow/tfjs-node'
+  - core-js
+  - mediasoup
+  - protobufjs
+  - unrs-resolver

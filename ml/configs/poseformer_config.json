@@ -1,0 +1,28 @@
+{
+  "exp_name": "poseformer_landmarks",
+  "seed": 42,
+  "output_dir": "ml/checkpoints/poseformer",
+  "task": "classification",
+  "model": {
+    "input_dim": 225,
+    "d_model": 512,
+    "nhead": 8,
+    "num_layers": 6,
+    "dim_feedforward": 2048,
+    "dropout": 0.1
+  },
+  "train": {
+    "batch_size": 2,
+    "epochs": 1,
+    "lr": 5e-5,
+    "weight_decay": 0.01,
+    "num_workers": 2,
+    "amp": true
+  },
+  "data": {
+    "clip_len": 32,
+    "normalize": true
+  },
+  "num_classes": 10,
+  "vocab_size": 1000
+}

@@ -1,0 +1,7 @@
+{
+  "tf_saved_model": "ml/checkpoints/tf_landmark/saved_model",
+  "tfjs_out": "apps/frontend/public/models/tfjs_landmark_model/sign_detector",
+  "normalize": true,
+  "quantize": false,
+  "input_shape": [1, 32, 126]
+}

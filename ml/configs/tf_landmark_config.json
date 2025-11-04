@@ -1,0 +1,12 @@
+{
+  "exp_name": "tf_landmark_no_tfa",
+  "output_dir": "ml/checkpoints/tf_landmark",
+  "frames": 32,
+  "features": 126,
+  "num_classes": 50,
+  "batch_size": 64,
+  "epochs": 10,
+  "lr": 0.001
+}
+
+

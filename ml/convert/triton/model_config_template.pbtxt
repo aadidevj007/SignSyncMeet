@@ -1,0 +1,36 @@
+name: "sign_detector"
+platform: "onnxruntime_onnx"
+max_batch_size: 8
+input [
+  {
+    name: "input"
+    data_type: TYPE_FP32
+    dims: [ 16, 3, 224, 224 ]  # [T, C, H, W] - adjust based on your model
+  }
+]
+output [
+  {
+    name: "output"
+    data_type: TYPE_FP32
+    dims: [ 100 ]  # num_classes - adjust based on your model
+  }
+]
+
+# TODO: Configure version policy
+# version_policy: { all { } }
+
+# TODO: Configure dynamic batching
+# dynamic_batching {
+#   preferred_batch_size: [ 1, 2, 4, 8 ]
+#   max_queue_delay_microseconds: 100
+# }
+
+# TODO: Configure instance groups for GPU
+# instance_group [
+#   {
+#     count: 1
+#     kind: KIND_GPU
+#     gpus: [ 0 ]
+#   }
+# ]
+

@@ -1,0 +1,27 @@
+{
+  "name": "signsync-meet",
+  "version": "1.0.0",
+  "description": "Futuristic AI Video Conferencing for Bidirectional Sign ↔ Speech Translation",
+  "private": true,
+  "workspaces": [
+    "apps/frontend",
+    "apps/backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter frontend dev\" \"pnpm --filter backend dev\"",
+    "build": "pnpm --filter frontend build && pnpm --filter backend build",
+    "start": "concurrently \"pnpm --filter frontend start\" \"pnpm --filter backend start\"",
+    "test": "pnpm --filter frontend test && pnpm --filter backend test",
+    "lint": "pnpm --filter frontend lint && pnpm --filter backend lint",
+    "docker:dev": "docker-compose -f infra/docker-compose.yml up -d",
+    "docker:down": "docker-compose -f infra/docker-compose.yml down"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

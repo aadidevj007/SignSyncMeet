@@ -1,0 +1,46 @@
+{
+  "exp_name": "videoswin_wlasl_phoenix",
+  "seed": 42,
+  "output_dir": "ml/checkpoints/videoswin",
+  "task": "classification",
+  "backbone": {
+    "name": "video_swin_base",
+    "pretrained": true,
+    "checkpoint": ""
+  },
+  "datasets": [
+    {
+      "name": "wlasl",
+      "root": "ml/data/raw/wlasl",
+      "labels_json": "ml/data/raw/wlasl/annotations.json",
+      "split_strategy": "official"
+    },
+    {
+      "name": "phoenix",
+      "root": "ml/data/raw/phoenix",
+      "split_strategy": "official",
+      "use_ctc": false
+    }
+  ],
+  "train": {
+    "batch_size": 2,
+    "epochs": 1,
+    "lr": 5e-5,
+    "weight_decay": 0.01,
+    "num_workers": 2,
+    "amp": true,
+    "dry_run": false
+  },
+  "data": {
+    "clip_len": 8,
+    "frame_stride": 2,
+    "resize": 224,
+    "center_crop": true,
+    "normalize_mean": [0.485, 0.456, 0.406],
+    "normalize_std": [0.229, 0.224, 0.225]
+  },
+  "labels": {
+    "ctc_vocab": "ml/configs/vocab_phoenix.json"
+  },
+  "num_classes": 10
+}
