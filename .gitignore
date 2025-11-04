@@ -9,6 +9,8 @@ coverage/
 # Production
 build/
 dist/
+.next/
+out/
 
 # Misc
 .DS_Store
@@ -56,7 +58,9 @@ ml/**/__pycache__/
 *.pyd
 .Python
 ml/checkpoints/
-ml/data/raw/
+ml/data/raw/*
+!ml/data/raw/.gitkeep
+!ml/data/raw/*/README.txt
 *.pth
 *.onnx
 *.h5
