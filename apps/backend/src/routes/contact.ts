@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 })
 
 // Contact form submission
-router.post('/contact', asyncHandler(async (req: Request, res: Response): Promise<void> => {
+router.post('/contact', asyncHandler(async (req: Request, res: Response) => {
   const { name, email, subject, message } = req.body
 
   if (!name || !email || !message) {
@@ -50,6 +50,7 @@ router.post('/contact', asyncHandler(async (req: Request, res: Response): Promis
       success: true, 
       message: 'Message sent successfully' 
     })
+    return
   } catch (error: any) {
     console.error('Error sending email:', error)
     
@@ -59,6 +60,7 @@ router.post('/contact', asyncHandler(async (req: Request, res: Response): Promis
       success: true, 
       message: 'Message received. We will get back to you soon.' 
     })
+    return
   }
 }))
 
