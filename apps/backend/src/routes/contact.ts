@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, Request, Response } from 'express'
 import { asyncHandler } from '../middleware/errorHandler'
 import nodemailer from 'nodemailer'
 
@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 })
 
 // Contact form submission
-router.post('/contact', asyncHandler(async (req: any, res: any) => {
+router.post('/contact', asyncHandler(async (req: Request, res: Response) => {
   const { name, email, subject, message } = req.body
 
   if (!name || !email || !message) {
